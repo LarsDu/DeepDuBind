@@ -1,0 +1,703 @@
+import tensorflow as tf
+import numpy as np
+import os
+import sys
+
+import time
+from NucConvModels import NucConvModel
+import DreamDataInput #Pull data batches
+from PeakFilters import DnasePeakFilter
+import DreamDataSaverHdf5
+from DuJsonParse import JsonParams
+import DuGenCoords
+#import NucVis #Draw figures
+#from NucThreshPwm import TrainingReviewer #extract pwms from conv activations
+
+#import DinucShuffle
+import DuBioTools as dbt
+import datetime
+
+
+# Get g-flags. These flags are essentially constants, but can also be set
+# by the user from commandline.
+flags = tf.app.flags
+FLAGS = tf.app.flags.FLAGS
+flags.DEFINE_string('json_params',"","""Full parameter file with files and training params""")
+flags.DEFINE_string('mode',"train","""Valid modes are 'train','validate', and 'eval'""")
+
+json_params_file = FLAGS.json_params
+
+params = JsonParams(json_params_file)
+
+###Create directories for training data
+#Append base_directory
+print "Save directory:", params.save_dir
+full_summary_dir = params.save_dir+os.sep+'summaries'
+full_checkpoint_dir = params.save_dir+os.sep+'checkpoints'
+
+#Make subdirectories if they don't already exist
+
+if not os.path.exists(params.save_dir):
+    os.makedirs(params.save_dir)
+#if not os.path.exists(full_checkpoint_dir):
+#    os.makedirs(full_checkpoint_dir)
+#if not os.path.exists(full_summary_dir):
+#    os.makedirs(full_summary_dir)
+    
+
+
+def main(_):
+    
+    mode = FLAGS.mode
+
+    print "Mode is",mode
+    
+    #Filter DNASE peaks and collect indices for building training and test sets
+    tf_name = os.path.basename(params.chip_seq_labels_file).split('.')[0]
+    "Transcription factor name is", tf_name
+    train_peaks_indices_file = params.save_dir+os.sep+tf_name+'.train.peaks.h5'
+    #train_peaks_coords_file =  params.save_dir+os.sep+tf_name+'.train.peaks.tsv'
+    
+    
+    print "Training file indices file:", train_peaks_indices_file
+    
+    
+    if os.path.isfile(train_peaks_indices_file)==False:
+        #Generate training index files
+        train_indexer = DuGenCoords.IndexCoords(params.train_coords_file,200,50)
+        DnasePeakFilter(train_indexer,params.train_cell_types,params.chip_seq_labels_file,
+                        params.dnase_relaxed_peaks_dir,train_peaks_indices_file,is_eval_set=False)
+
+    
+            
+    #Initialize training and test sets
+
+    if (mode=='train' or mode == 'validate'):
+        
+        hdf5_fname = params.save_dir+os.sep+params.train_hdf5_file
+        if ((hdf5_fname == None) or (hdf5_fname == '.')
+                or (hdf5_fname == "")):
+            print "train_hdf5_file not specified"
+            hdf5_fname = params.save_dir+os.sep+params.chip_seq_labels_file.split('.')[0]+"train_cache.h5"
+            print "Specifying filename as",hdf5_fname
+        #Saving hdf5 file cache if none detected
+        if os.path.isfile(hdf5_fname):
+            print "Drawing preprocessed data from",hdf5_fname
+            training_set = DreamDataInput.DataCollectionHdf5(hdf5_fname)
+        else:
+            print "Caching training examples to HDF5 file!"
+            print "Make sure there's more than 10 GB of space on current harddrive!"
+            DreamDataSaverHdf5.create_hdf5(json_params_file,train_peaks_indices_file,hdf5_fname)
+
+
+        ###TRAINING    
+        if (mode == 'train'):
+            #Run training
+            training_set = DreamDataInput.DataCollectionHdf5(hdf5_fname)
+            training_set.open()
+            print "Running training from cached data"
+            run_training(training_set,testing_set = None,json_params = params,
+                             mode=mode)
+            training_set.close()
+            print "Time of completion:",datetime.datetime.utcnow()
+        ###K-FOLDS VALIDATION
+        elif (mode == 'validate'):
+                #Make sure k-folds params are valid
+            if (params.k_folds>0) and (1./params.k_folds < params.k_validation_test_frac):
+                print('test_frac ',params.k_validation_test_frac,' too large for k=',
+                params.k_folds,' fold.') 
+
+            print "Performing k-folds model validation..."
+            print "k=",params.k_folds
+            print "Test fraction = ", params.k_validation_test_frac
+            #Divide training_set into valid_train_set[k] and valid_test_set[k]
+            valid_train_set = []
+            valid_test_set = []
+            valid_train_size = int((1-params.k_validation_test_frac)*
+                                   training_set.num_examples)
+            valid_test_size = int(training_set.num_examples-valid_train_size)
+            print "K-folds training set size:",valid_train_size
+            print "K-folds testing set size:",valid_test_size
+            
+
+            all_indices = np.random.permutation(training_set.perm_indices)
+            for k in range(params.k_folds):
+                print "Starting on k-fold number", k
+                #Need separate constructors for each training run!
+                valid_train_set.append(DreamDataInput.DataCollectionHdf5(hdf5_fname))
+                valid_test_set.append(DreamDataInput.DataCollectionHdf5(hdf5_fname))
+                
+                valid_train_set[k].set_perm_indices(all_indices[(valid_train_size*k):
+                                                                 (valid_train_size*(k+1))])
+                valid_test_set[k].set_perm_indices(np.setdiff1d(all_indices,
+                                                                valid_train_set[k].perm_indices))
+                valid_train_set[k].open()
+                valid_test_set[k].open()                                             
+                run_training(valid_train_set[k],valid_test_set[k],params,mode,k)
+                valid_train_set[k].close()
+                valid_test_set[k].close()
+                print "Time of completion for k=",k,":",datetime.datetime.utcnow()
+
+            
+        
+    ###EVALUATE A DATASET    
+    elif (mode == 'eval' ):
+
+        #print "Evaluation file derived from Dnase peaks:",eval_peaks_coords_file
+        eval_peaks_indices_file =  params.save_dir+os.sep+tf_name+'.eval.peaks.h5'
+        #eval_peaks_coords_file =  params.save_dir+os.sep+tf_name+'.eval.peaks.tsv'
+        
+        eval_indexer = DuGenCoords.IndexCoords(params.eval_coords_file,200,50)
+
+        if os.path.isfile(eval_peaks_indices_file)==False:
+            #Generate eval index files
+            DnasePeakFilter(eval_indexer,params.eval_cell_types,params.chip_seq_labels_file,
+                            params.dnase_relaxed_peaks_dir,eval_peaks_indices_file,
+                            is_eval_set=True)
+        print "Eval file indices file:", eval_peaks_indices_file
+
+
+        ########CACHING EVAL DATA (DEPRECATED)
+        do_cache_eval = False #This must be set right here within code.
+        
+        if (do_cache_eval):
+            #If there is a preloaded HDF5 file, generate eval set from that data collection
+            hdf5_eval_fname = params.save_dir+os.sep+params.eval_hdf5_file
+            if ((hdf5_eval_fname == None) or (hdf5_eval_fname == '.')
+                    or (hdf5_eval_fname == "")):
+                #Give cache file name if none specified
+                hdf5_eval_fname = params.save_dir+os.sep+params.chip_seq_labels_file.split('.')[0]+'.eval_cache.h5'
+            if os.path.isfile(hdf5_eval_fname):
+                print "Drawing preprocessed data from",hdf5_eval_fname
+                eval_set = DreamDataInput.DataCollectionHdf5(hdf5_eval_fname)
+            else:
+                #Create an hdf5 file saving all eval examples
+                print "Caching eval examples to HDF5 file!"
+                print "Make sure there's more than 10 GB of space on current harddrive!"
+                DreamDataSaverHdf5.create_hdf5(json_params_file,hdf5_eval_fname)
+                eval_set = DreamDataInput.DataCollectionHdf5(hdf5_eval_fname)
+        ######END OF CACHING EVAL DATA
+        else:
+
+            #This creates a DataCollection object which can be used to slowly pull
+            # evaluation examples without having to cache to disk
+
+            eval_loader = DreamDataInput.DreamDataLoaderJson(json_params_file,
+                                                             eval_peaks_indices_file,
+                                                             mode='eval')
+            eval_set = eval_loader.collection
+
+
+        print "Eval set is", eval_set.indexer
+        ##Run evaluation
+        eval_set.open()
+        print "Running evaluation!"
+        run_evaluation(eval_set,params)
+        eval_set.close()
+            
+        
+
+    else:
+        print "Mode", mode,"not a valid mode."
+        print "Valid modes are train,eval,validate"
+
+
+
+def run_evaluation(eval_set,json_params):
+    print "RUNNING EVALUATION"
+    run_training(eval_set,None,json_params,mode='eval',k=0)
+
+
+
+
+
+    
+
+                      
+def run_training(training_set,testing_set,json_params,mode,k=0):
+    print "Current mode is", mode
+    k_checkpoint_dir = full_checkpoint_dir+os.sep+'checkpoint_k'+str(k)
+    if not os.path.exists(k_checkpoint_dir):
+        os.makedirs(k_checkpoint_dir)
+                   
+    model_graph =tf.Graph()
+    with model_graph.as_default(): #Set graph context
+        
+
+        #CONSTRUCT THE DATAFLOW GRAPH
+        #Process optional custom params (input is form 'num_filters=15';
+        #custom_model_params need to be converted into a dict)
+
+        #Correct chrom window size (data is actually pooled from big wig file)
+        pooled_chrom_window = json_params.pooled_chrom_window
+
+    
+        karg_dict = {}
+        if json_params.custom_model_params != None:
+            for str_arg in json_params.custom_model_params:
+                key,value = str_arg.split('=')
+                karg_dict[str(key)]=int(value)
+            print "Custom model params: ",karg_dict
+
+        #Initialize model with custom arguments (if specified)
+        ntconv = NucConvModel(json_params.seq_len,pooled_chrom_window, **karg_dict)
+
+
+        #Placeholders for input data. Data will be fed to these nodes
+        #via a feed_dict. Remember that there is also a keep_prob placeholder
+        #for dropout!
+
+        #DNA placeholder
+        dna_seq_placeholder = tf.placeholder(tf.float32,
+                                          shape=[None,1,ntconv.seq_len,4],
+                                          name="DNA_SEQ_DATA")
+
+        #DNAshape placeholder
+        num_shapes = training_set.num_dna_shapes
+        dna_shape_placeholder = tf.placeholder(tf.float32,
+                        shape=[None,1,ntconv.seq_len,num_shapes],
+                                                    name="DNA_SHAPE_DATA")
+
+
+        #DNA sequence and shape placeholder
+        #num_shapes = training_set.dream_loader.dna_shape_data.num_shapes
+        #seq_shape_placeholder = tf.placeholder(tf.float32,
+        #                            shape = [None,1,ntconv.seq_len,4+num_shapes],
+        #                            name = "SEQ_AND_SHAPE_DATA")
+
+
+        #DNAseI hypersensitivity placeholder
+        dnase_placeholder = tf.placeholder(tf.float32,
+                                     shape = [None,
+                                            pooled_chrom_window],
+                                                name ="DNASE_DATA")
+        
+        #Labels placeholder
+        #Note: nt_conv.num_classes determined by data_input (in constructor)
+        labels_placeholder = tf.placeholder(tf.float32,
+                                            shape=[None, ntconv.num_classes],
+                                            name="LABELS")
+        #Keep prob placeholder
+        keep_prob_placeholder = tf.placeholder(tf.float32,name="keep_prob")
+
+
+
+
+
+
+        #Construct convolution, pooling, and matrix multiplication ops for
+        #dataflow graph
+
+        ####TODO:Input placeholders for addtional data###
+        logits = ntconv.inferenceC(dna_seq_placeholder,
+                                   dna_shape_placeholder,
+                                   dnase_placeholder,
+                                   keep_prob_placeholder)
+        
+
+
+
+        probs = ntconv.logits_to_probs(logits) #For final eval
+        loss = ntconv.loss(logits,labels_placeholder)
+
+        #Add gradient ops to graph with learning rate
+        train_op = ntconv.training_adam(loss,json_params.learning_rate)
+
+        #Count the number of correct predictions
+        eval_num_correct = ntconv.evaluation(logits,labels_placeholder)
+
+        #Consolidate summary ops for entire graph
+        summary_op = tf.merge_all_summaries()
+    
+    
+    with tf.Session(graph = model_graph) as sess:
+        with tf.device('/cpu:0'):
+        
+
+            #coord = tf.train.Coordinator() used for input queue coordination
+            #threads = tf.train.start_queue_runners(coord=coord)
+
+            print "Initalizing variables for graph"
+            #Init variables!
+            init = tf.initialize_all_variables()
+            sess.run(init)
+            #Create Saver for writing training checkpoints
+            saver = tf.train.Saver()
+
+            if (mode=='train' or mode =='validate'):
+
+                #Look up and retrieve most recent checkpoint
+                ckpt = tf.train.get_checkpoint_state(k_checkpoint_dir)
+                if ckpt and ckpt.model_checkpoint_path:
+                    print "Checkpoint restored"
+                    saver.restore(sess, ckpt.model_checkpoint_path)
+                else:
+                    print "No checkpoint found"
+
+
+                print "Running training mode..."
+                #Instatiate SummaryWriter to output summaries and Graph (optional)
+                summary_writer = tf.train.SummaryWriter(full_summary_dir+'_k'+str(k),
+                                                        sess.graph)
+
+                for step in range(json_params.max_train_steps):
+                    #Keep track of step time
+                    
+                    start_time = time.time()
+                    (dna_seq_batch,
+                     dna_shape_batch,
+                     dnase_seq_batch,
+                     chip_labels,_) = training_set.pull_batch_train(json_params.batch_size)
+                    
+                    feed_dict={
+                               dna_seq_placeholder:dna_seq_batch,
+                               dna_shape_placeholder:dna_shape_batch,
+                               dnase_placeholder:dnase_seq_batch,
+                               labels_placeholder:chip_labels,
+                               keep_prob_placeholder:0.5}
+                    duration = time.time()-start_time
+                    proc_start_time = time.time()
+
+                    _,loss_value,_ = sess.run([train_op,loss,logits],feed_dict=feed_dict)
+                    process_duration = time.time()-proc_start_time
+                    assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
+
+
+
+                    # Write the summaries and print an overview fairly often.
+                    if step % 100 == 0:
+                        # Print status to stdout.
+                        print('Step %d: loss = %.4f pull (%.3f sec),gpu (%.3f sec)' % (step,
+                                                         loss_value, duration,process_duration))
+                        #print logits_value
+                        # Update the events file.
+                        summary_str = sess.run(summary_op, feed_dict=feed_dict)
+                        summary_writer.add_summary(summary_str, step)
+                        summary_writer.flush()
+
+                    # Save a checkpoint and (maybe) evaluate the model
+                    #    against train and test
+                    if (step + 1) % 60000 == 0 or (step + 1) == json_params.max_train_steps:
+
+                        #save_fpath = os.path.join(
+                        #    os.path.dirname(__file__),json_params.save_dir,json_params.save_prefix)
+
+                        ckpt_name = "train_ckpt"
+                        print "Saving on ", k_checkpoint_dir
+                        saver.save(sess,k_checkpoint_dir+os.sep+ckpt_name, global_step=step)
+
+
+                        ###Note:If running training from uncached data, evaluating data will take an
+                        #incredibly long time. 
+
+                        #eval_batch_size will have an error if the batch size is <2.
+                        #To circumvent this error, try to decide on a batch_size of 2 or 3
+
+                        eval_batch_size = decide_on_eval_batch_size(training_set)
+
+                        # Evaluate against the training set.
+                        print('Training Data Eval:')
+                        eval_model( sess,
+                                    training_set,         
+                                    'train',
+                                    eval_num_correct,
+                                    dna_seq_placeholder,
+                                    dna_shape_placeholder,
+                                    dnase_placeholder,
+                                    labels_placeholder,
+                                    keep_prob_placeholder,
+                                    eval_batch_size=eval_batch_size)
+
+
+
+
+
+
+                        # Evaluate against the test set (or final evaluation set).
+                        if testing_set != None and testing_set.num_examples >0:
+                            eval_batch_size=decide_on_eval_batch_size(testing_set)
+                            print('Test Data Eval:')
+                            eval_model( sess,
+                                        testing_set,
+                                        'test',
+                                        eval_num_correct,
+                                        dna_seq_placeholder,
+                                        dna_shape_placeholder,
+                                        dnase_placeholder,
+                                        labels_placeholder,
+                                        keep_prob_placeholder,
+                                        eval_batch_size=eval_batch_size)
+
+
+            elif mode == 'eval':
+                #Look up and retrieve most recent checkpoint
+                k_checkpoint_dir = full_checkpoint_dir+os.sep+'checkpoint_k'+str(k)
+                ckpt = tf.train.get_checkpoint_state(k_checkpoint_dir)
+                if ckpt and ckpt.model_checkpoint_path:
+                    print "Checkpoint restored"
+                    saver.restore(sess, ckpt.model_checkpoint_path)
+                else:
+                    print "No checkpoint found"
+
+                print "Evaluating data on evaluation set!"
+
+                eval_output_file = os.path.splitext(json_params.eval_hdf5_file)[0]+'.tsv'
+                print "Writing records to",eval_output_file
+
+                write_predictions(sess,
+                            training_set,
+                            probs,
+                            'eval',
+                            dna_seq_placeholder,
+                            dna_shape_placeholder,
+                            dnase_placeholder,
+                            labels_placeholder,
+                            keep_prob_placeholder,
+                            output_file = eval_output_file)
+                print "Finished writing at time of completion:",datetime.datetime.utcnow()
+
+
+                #conv_filters = ntconv.conv_filters.eval() 
+                #Need to extract weights somehow
+                #output_image = json_params.base_dir+os.sep+json_params.output_image
+                #NucVis.vis_conv_filters(conv_filters,output_image)
+                #NucVis.vis_filter_resp(sess,
+                #                       data_placeholder,
+                #                       labels_placeholder,
+                #                       keep_prob_placeholder,
+                #                        ntconv,
+                #                       nuc_data,
+                #                       json_params.base_dir)
+                #reviewer = TrainingReviewer(sess,
+                #                 data_placeholder,
+                #                 labels_placeholder,
+                #                 keep_prob_placeholder,
+                #                 ntconv,
+                #                 nuc_data,
+                #                 json_params.base_dir)
+                #pwms = reviewer.extract_simple_pwms(save_file=json_params.base_dir+os.sep+'pwms.png')
+            else:
+                print "User must specify mode!"
+
+
+            
+
+def eval_model(sess,
+               data_collection,
+                summary_tag,
+                eval_num_correct,
+                dna_seq_placeholder,
+                dna_shape_placeholder,
+                dnase_placeholder,
+                labels_placeholder,
+                keep_prob_placeholder,
+                eval_batch_size):
+
+    #Note: batch_size here can be set to 1 to eliminate any
+    #evaulation errors from rounding.
+    
+    
+    batch_size = eval_batch_size
+
+    
+    """Run one evaluation on one epoch. This function will take
+    data in data_set, pass it to the placeholders of the model, and evaluate
+    once over the entire dataset. Useful for cross-validation and testing.
+    """
+    
+    num_correct=0 #counts number of correct predictions
+    steps_per_epoch = data_collection.num_examples//batch_size ###num_examples
+    #Due to rounding down (via floor division), we need
+    #to calculate the actual number of examples being evaluated
+    #on this function call
+
+    if (batch_size==2):
+        true_num_examples = steps_per_epoch*batch_size+1
+    else:
+        true_num_examples = steps_per_epoch*batch_size  
+
+
+    #### Eval on the whole data set
+    # Remember to call pull_batch_eval not pull_batch_train.
+    # Calls to eval have different epoch trackers
+    for _ in range(steps_per_epoch):
+        (dna_seq_batch,
+         dna_shape_batch,
+        dnase_seq_batch,
+        chip_labels,_) = data_collection.pull_batch_eval(batch_size)
+
+        #print dna_seq_batch.shape
+        #print dna_shape_batch.shape
+        #print dnase_seq_batch.shape
+        #print chip_labels.shape
+
+        feed_dict={
+                   dna_seq_placeholder:dna_seq_batch,
+                   dna_shape_placeholder:dna_shape_batch,
+                   dnase_placeholder: dnase_seq_batch,
+                   labels_placeholder:chip_labels,
+                   keep_prob_placeholder:0.5
+                  }
+
+        
+        num_correct += sess.run(eval_num_correct,feed_dict=feed_dict)
+        #batch_prob = sess.run(probs,feed_dict)
+        
+    precision = float(num_correct)/data_collection.num_examples
+
+    #summary_writer.add_summary(loss+'/'+summar_tag,step)
+    print('  Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' %
+        (data_collection.num_examples, num_correct, precision))
+
+
+
+
+
+def write_predictions(sess,
+                data_collection,
+                probs_op,
+                summary_tag,
+                dna_seq_placeholder,
+                dna_shape_placeholder,
+                dnase_placeholder,
+                labels_placeholder,
+                keep_prob_placeholder,
+                output_file,
+                ):
+
+    #Note: batch_size here can be set to 1 to eliminate any
+    #evaulation errors from rounding.
+    
+    
+    batch_size = 1
+
+    eval_indexer = data_collection.indexer
+    peak_indices = np.unique(data_collection.indices)
+    """Run one evaluation on one epoch. This function will take
+    data in data_set, pass it to the placeholders of the model, and evaluate
+    once over the entire dataset. Used for writing prediction file
+    """
+    eval_indices = range(eval_indexer.num_elements)
+    #Create bool mask where each peak index found in  eval_indices get marked True
+    print "Creating eval mask"
+    ma_eval_indexer = np.in1d(eval_indices,peak_indices)
+    #num_correct=0 #counts number of correct predictions
+    steps_per_epoch = data_collection.num_examples//batch_size ###num_examples
+    #Due to rounding down (via floor division), we need
+    #to calculate the actual number of examples being evaluated
+    #on this function call
+   
+    #### Eval on the whole data set
+    # Calls to eval have different epoch trackers
+
+    #Minimizing the number of calls to f.write leads to a vast increase
+    # in speed of writes, and doesn't degrade SSD performance as much
+
+
+
+    buffer_size = 10000
+    num_buffers = eval_indexer.num_elements//buffer_size
+    #Prellocate the write buffer (avoiding appends leads to a 10% increase in speed)
+    write_buffer =[None]*(buffer_size) 
+    write_index = 0 #Preallocation index
+    final_buffer_index = num_buffers*buffer_size
+    print "Final buffer index is", final_buffer_index
+    t0 = time.clock()
+
+    with open(output_file,'w') as f:
+        for i in eval_indices:
+                
+            if ma_eval_indexer[i]==False:
+                coords = eval_indexer.retrieve_by_index(i)
+                contig=str(coords[0])
+                start=str(int(coords[1]))
+                end=str(int(coords[2]))
+                prob = str(0.00)
+                if i > final_buffer_index:
+                    f.write(''.join([contig,'\t',start,'\t',end,'\t',prob,'\n']))
+                else:
+                    write_buffer[write_index-1]=''.join([contig,'\t',start,'\t',end,'\t',prob,'\n'])
+
+
+                            
+            elif ma_eval_indexer[i]==True:
+                #print i
+                #print eval_indexer.retrieve_by_index(i)
+                #if i is in example indices...
+                (dna_seq_batch,
+                dna_shape_batch,
+                dnase_seq_batch,
+                chip_labels,
+                example_indices) = data_collection.pull_batch_prediction(batch_size)
+
+                #print dna_seq_batch.shape
+                #print dna_shape_batch.shape
+                #print dnase_seq_batch.shape
+                #print chip_labels.shape
+
+                feed_dict={
+                    dna_seq_placeholder:dna_seq_batch,
+                    dna_shape_placeholder:dna_shape_batch,
+                    dnase_placeholder: dnase_seq_batch,
+                    labels_placeholder:chip_labels,
+                    keep_prob_placeholder:0.5
+                    }
+
+            #num_correct += sess.run(eval_num_correct,feed_dict=feed_dict)
+                batch_prob = sess.run(probs_op,feed_dict)
+
+                coords = eval_indexer.retrieve_by_index(i)
+                contig=str(coords[0])
+                start=str(int(coords[1]))
+                end=str(int(coords[2]))
+                prob = str(batch_prob[0][1])
+                
+                if i > final_buffer_index:
+                    f.write(''.join([contig,'\t',start,'\t',end,'\t',prob,'\n']))
+                else:
+                    write_buffer[write_index-1]=''.join([contig,'\t',start,'\t',end,'\t',prob,'\n'])
+            #END IF MASK is True
+            
+            write_index += 1
+            if (i % buffer_size)==0 and i>0:
+                write_index = 0 #Reset write index
+                twrite0 = time.clock()
+                f.writelines(write_buffer)
+                tfwrite = time.clock()-twrite0
+                tf = time.clock()-t0
+                t0 = time.clock()
+                    
+                print "Wrote",i,"predictions to", output_file,"in",tf,"s"
+                print "Write time took",tfwrite,"s"
+                if i == final_buffer_index:
+                    "Final buffer index passed. Writing directly to file"
+    
+    
+
+
+
+
+
+    
+
+
+def decide_on_eval_batch_size(data_collection):
+    num_examples = data_collection.num_examples
+    if num_examples%3 ==0:
+        eval_batch_size=3
+    elif num_examples%2 ==0:
+        eval_batch_size=2
+    else:
+        print "Couldn't find appropriate batch size (dataset size is prime number)"
+        print "The last example in the dataset will not be used"
+        eval_batch_size=2
+    return eval_batch_size
+    
+        
+if __name__ == '__main__':
+    tf.app.run()
+    #Note that tf.app.run is a wrapper that parses flags and dispatchs back to main()
+    #You don't need to run main() here directly!
+    #https://github.com/tensorflow/tensorflow/
+    #blob/master/tensorflow/python/platform/default/_app.py
+

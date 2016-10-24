@@ -1,0 +1,808 @@
+I tensorflow/stream_executor/dso_loader.cc:111] successfully opened CUDA library libcublas.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:111] successfully opened CUDA library libcudnn.so.5 locally
+I tensorflow/stream_executor/dso_loader.cc:111] successfully opened CUDA library libcufft.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:111] successfully opened CUDA library libcuda.so.1 locally
+I tensorflow/stream_executor/dso_loader.cc:111] successfully opened CUDA library libcurand.so.8.0 locally
+Save directory: CTCF_train_infC
+Mode is eval
+Training file indices file: CTCF_train_infC/CTCF.train.peaks.h5
+(DnasePeakFilter) Cell types in /media/storage/ENCODE_DREAM_LINK/ChIPseq/labels/CTCF.train.labels.tsv.bgz are: ['A549', 'H1-hESC', 'HeLa-S3', 'HepG2', 'IMR-90', 'K562', 'MCF-7']
+(DnasePeakFilter) Selected cell types are [u'A549', u'H1-hESC', u'HeLa-S3', u'HepG2', u'IMR-90', u'K562', u'MCF-7']
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.A549.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.H1-hESC.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.HeLa-S3.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.HepG2.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.IMR-90.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.K562.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.MCF-7.relaxed.narrowPeak
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+Total number of bound peaks identified: 330847
+Total number of unbound peaks identified: 1010653
+Total number of unbound non peaks identified: 753112
+Number of selected bound peaks: 330847
+Number of selected unbound peaks: 264677
+Number of selected unbound non-peaks: 66169
+Saving selected indices to CTCF_train_infC/CTCF.train.peaks.h5 !
+(DnasePeakFilter) Evaluation set will use peaks from ChipLabelsFile!
+(DnasePeakFilter) Cell types in /media/storage/ENCODE_DREAM_LINK/ChIPseq/labels/CTCF.train.labels.tsv.bgz are: ['A549', 'H1-hESC', 'HeLa-S3', 'HepG2', 'IMR-90', 'K562', 'MCF-7']
+(DnasePeakFilter) Selected cell types are ['A549', 'H1-hESC', 'HeLa-S3', 'HepG2', 'IMR-90', 'K562', 'MCF-7']
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.A549.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.H1-hESC.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.HeLa-S3.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.HepG2.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.IMR-90.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.K562.relaxed.narrowPeak
+Examining ../ENCODE_DREAM_LINK/DNASE/peaks/relaxed/DNASE.MCF-7.relaxed.narrowPeak
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+EOF reached
+Evaluation set selected
+Selecting genomic locations surrounding dnase peaks
+get_indices_window took 19.41616 s to run
+(indices window for eval) Num elements: 7245667
+Saving selected indices to CTCF_train_infC/CTCF.eval.peaks.h5 !
+Eval file indices file: CTCF_train_infC/CTCF.eval.peaks.h5
+Loading indices file CTCF_train_infC/CTCF.eval.peaks.h5
+Loading  selected indices from [  1.96000000e+02   1.97000000e+02   1.98000000e+02 ...,   6.05195380e+07
+   6.05195390e+07   6.05195400e+07]
+Num examples:  7245667
+Genome file is /media/storage/ENCODE_DREAM_LINK/hg19_genome/hg19.genome.fa
+ChIP-seq training file is /media/storage/ENCODE_DREAM_LINK/ChIPseq/labels/CTCF.train.labels.tsv.bgz
+Cell types are: [u'PC-3']
+Cell types (input): [u'PC-3']
+Init DNA shape data
+Init DNAse I chromatin accessibility data
+DNase I accessibility training files: [u'DNASE.PC-3.fc.signal.bigwig']
+Init RNA-seq data
+Init genome annotation
+Cell types in collection [u'PC-3']
+Eval set is <DuGenCoords.IndexCoords instance at 0x7fd9066ee440>
+Running evaluation!
+RUNNING EVALUATION
+Current mode is eval
+Total fc1 input vector length: 24150
+Tensor("dna_max_pool1/Reshape:0", shape=(?, 7200), dtype=float32)
+Tensor("dna_shape_max_pool1/Reshape:0", shape=(?, 4800), dtype=float32)
+Tensor("dnase_max_pool1/Reshape:0", shape=(?, 12150), dtype=float32)
+I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:925] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:951] Found device 0 with properties: 
+name: GeForce GTX 1060 6GB
+major: 6 minor: 1 memoryClockRate (GHz) 1.7845
+pciBusID 0000:01:00.0
+Total memory: 5.92GiB
+Free memory: 5.20GiB
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:972] DMA: 0 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:982] 0:   Y 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:1041] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GeForce GTX 1060 6GB, pci bus id: 0000:01:00.0)
+Initalizing variables for graph
+No checkpoint found
+Evaluating data on evaluation set!
+Writing records to CTCF.eval_cache.tsv
+Creating eval mask
+Final buffer index is 60510000
+Wrote 10000 predictions to CTCF.eval_cache.tsv in 3.947626 s
+Write time took 0.000794999999982 s
+Wrote 20000 predictions to CTCF.eval_cache.tsv in 27.35046 s
+Write time took 0.000795000000039 s
+Wrote 30000 predictions to CTCF.eval_cache.tsv in 46.234492 s
+Write time took 0.000851000000011 s
+Wrote 40000 predictions to CTCF.eval_cache.tsv in 42.002778 s
+Write time took 0.000878000000057 s
+Wrote 50000 predictions to CTCF.eval_cache.tsv in 47.712173 s
+Write time took 0.000813999999991 s
+Wrote 60000 predictions to CTCF.eval_cache.tsv in 23.631825 s
+Write time took 0.00122999999996 s
+Wrote 70000 predictions to CTCF.eval_cache.tsv in 42.885095 s
+Write time took 0.00086900000008 s
+Wrote 80000 predictions to CTCF.eval_cache.tsv in 28.660047 s
+Write time took 0.00115500000004 s
+Wrote 90000 predictions to CTCF.eval_cache.tsv in 25.137189 s
+Write time took 0.000839000000042 s
+Wrote 100000 predictions to CTCF.eval_cache.tsv in 25.573229 s
+Write time took 0.000854000000004 s
+Wrote 110000 predictions to CTCF.eval_cache.tsv in 26.891194 s
+Write time took 0.000992999999994 s
+Wrote 120000 predictions to CTCF.eval_cache.tsv in 41.76214 s
+Write time took 0.00141599999995 s
+Wrote 130000 predictions to CTCF.eval_cache.tsv in 68.953523 s
+Write time took 0.001124 s
+Wrote 140000 predictions to CTCF.eval_cache.tsv in 56.411904 s
+Write time took 0.000827000000072 s
+Wrote 150000 predictions to CTCF.eval_cache.tsv in 48.143557 s
+Write time took 0.000974999999926 s
+Wrote 160000 predictions to CTCF.eval_cache.tsv in 51.056226 s
+Write time took 0.00111900000002 s
+Wrote 170000 predictions to CTCF.eval_cache.tsv in 76.949232 s
+Write time took 0.000948000000108 s
+Wrote 180000 predictions to CTCF.eval_cache.tsv in 66.839867 s
+Write time took 0.00101299999983 s
+Wrote 190000 predictions to CTCF.eval_cache.tsv in 63.558815 s
+Write time took 0.000835000000052 s
+Wrote 200000 predictions to CTCF.eval_cache.tsv in 56.992304 s
+Write time took 0.000903999999991 s
+Wrote 210000 predictions to CTCF.eval_cache.tsv in 57.121557 s
+Write time took 0.001125 s
+Wrote 220000 predictions to CTCF.eval_cache.tsv in 73.026 s
+Write time took 0.00101800000016 s
+Wrote 230000 predictions to CTCF.eval_cache.tsv in 40.596909 s
+Write time took 0.00111200000015 s
+Wrote 240000 predictions to CTCF.eval_cache.tsv in 54.484548 s
+Write time took 0.00184399999989 s
+Wrote 250000 predictions to CTCF.eval_cache.tsv in 63.586178 s
+Write time took 0.00110399999994 s
+Wrote 260000 predictions to CTCF.eval_cache.tsv in 40.249822 s
+Write time took 0.00091899999984 s
+Wrote 270000 predictions to CTCF.eval_cache.tsv in 16.998467 s
+Write time took 0.00137599999994 s
+Wrote 280000 predictions to CTCF.eval_cache.tsv in 31.074161 s
+Write time took 0.0014799999999 s
+Wrote 290000 predictions to CTCF.eval_cache.tsv in 37.460971 s
+Write time took 0.000995000000103 s
+Wrote 300000 predictions to CTCF.eval_cache.tsv in 34.43969 s
+Write time took 0.00125000000003 s
+Wrote 310000 predictions to CTCF.eval_cache.tsv in 58.933109 s
+Write time took 0.00100999999995 s
+Wrote 320000 predictions to CTCF.eval_cache.tsv in 70.790437 s
+Write time took 0.000966000000062 s
+Wrote 330000 predictions to CTCF.eval_cache.tsv in 78.099458 s
+Write time took 0.000943000000007 s
+Wrote 340000 predictions to CTCF.eval_cache.tsv in 57.268137 s
+Write time took 0.00102699999979 s
+Wrote 350000 predictions to CTCF.eval_cache.tsv in 57.326678 s
+Write time took 0.0011300000001 s
+Wrote 360000 predictions to CTCF.eval_cache.tsv in 68.981818 s
+Write time took 0.000871000000188 s
+Wrote 370000 predictions to CTCF.eval_cache.tsv in 43.932827 s
+Write time took 0.000974000000042 s
+Wrote 380000 predictions to CTCF.eval_cache.tsv in 52.600691 s
+Write time took 0.00107600000001 s
+Wrote 390000 predictions to CTCF.eval_cache.tsv in 62.611529 s
+Write time took 0.00108899999987 s
+Wrote 400000 predictions to CTCF.eval_cache.tsv in 61.936026 s
+Write time took 0.000911999999971 s
+Wrote 410000 predictions to CTCF.eval_cache.tsv in 52.506878 s
+Write time took 0.00143000000025 s
+Wrote 420000 predictions to CTCF.eval_cache.tsv in 75.895536 s
+Write time took 0.00105900000017 s
+Wrote 430000 predictions to CTCF.eval_cache.tsv in 59.900853 s
+Write time took 0.00120900000002 s
+Wrote 440000 predictions to CTCF.eval_cache.tsv in 77.901864 s
+Write time took 0.00154299999986 s
+Wrote 450000 predictions to CTCF.eval_cache.tsv in 70.325609 s
+Write time took 0.00106800000003 s
+Wrote 460000 predictions to CTCF.eval_cache.tsv in 56.487456 s
+Write time took 0.00115700000015 s
+Wrote 470000 predictions to CTCF.eval_cache.tsv in 63.007222 s
+Write time took 0.000927999999931 s
+Wrote 480000 predictions to CTCF.eval_cache.tsv in 77.615596 s
+Write time took 0.00163299999986 s
+Wrote 490000 predictions to CTCF.eval_cache.tsv in 66.280067 s
+Write time took 0.000863999999638 s
+Wrote 500000 predictions to CTCF.eval_cache.tsv in 68.720879 s
+Write time took 0.000911000000087 s
+Wrote 510000 predictions to CTCF.eval_cache.tsv in 63.831965 s
+Write time took 0.000974999999926 s
+Wrote 520000 predictions to CTCF.eval_cache.tsv in 68.302191 s
+Write time took 0.00160099999994 s
+Wrote 530000 predictions to CTCF.eval_cache.tsv in 88.264902 s
+Write time took 0.0011599999998 s
+Dnase vals None detected. Attempting to convert None to mean
+Wrote 540000 predictions to CTCF.eval_cache.tsv in 72.459682 s
+Write time took 0.00120700000025 s
+Wrote 550000 predictions to CTCF.eval_cache.tsv in 82.950656 s
+Write time took 0.000977000000148 s
+Wrote 560000 predictions to CTCF.eval_cache.tsv in 86.850362 s
+Write time took 0.00102599999991 s
+Wrote 570000 predictions to CTCF.eval_cache.tsv in 73.784114 s
+Write time took 0.00115399999959 s
+Wrote 580000 predictions to CTCF.eval_cache.tsv in 72.817857 s
+Write time took 0.000997000000098 s
+Wrote 590000 predictions to CTCF.eval_cache.tsv in 74.431979 s
+Write time took 0.000996999999643 s
+Wrote 600000 predictions to CTCF.eval_cache.tsv in 46.320494 s
+Write time took 0.00118100000009 s
+Wrote 610000 predictions to CTCF.eval_cache.tsv in 79.563977 s
+Write time took 0.00154099999963 s
+Wrote 620000 predictions to CTCF.eval_cache.tsv in 65.936753 s
+Write time took 0.000935000000027 s
+Wrote 630000 predictions to CTCF.eval_cache.tsv in 120.090849 s
+Write time took 0.00121800000034 s
+Wrote 640000 predictions to CTCF.eval_cache.tsv in 107.068831 s
+Write time took 0.00124400000004 s
+Wrote 650000 predictions to CTCF.eval_cache.tsv in 95.902211 s
+Write time took 0.00124900000083 s
+Wrote 660000 predictions to CTCF.eval_cache.tsv in 86.838523 s
+Write time took 0.00175899999977 s
+Wrote 670000 predictions to CTCF.eval_cache.tsv in 91.816353 s
+Write time took 0.00150399999984 s
+Wrote 680000 predictions to CTCF.eval_cache.tsv in 67.092832 s
+Write time took 0.000978999999461 s
+Wrote 690000 predictions to CTCF.eval_cache.tsv in 33.175178 s
+Write time took 0.00127900000007 s
+Wrote 700000 predictions to CTCF.eval_cache.tsv in 32.472885 s
+Write time took 0.000936000000365 s
+Wrote 710000 predictions to CTCF.eval_cache.tsv in 61.285447 s
+Write time took 0.00143300000036 s
+Wrote 720000 predictions to CTCF.eval_cache.tsv in 74.916299 s
+Write time took 0.00125500000013 s
+Wrote 730000 predictions to CTCF.eval_cache.tsv in 60.07083 s
+Write time took 0.00109400000019 s
+Wrote 740000 predictions to CTCF.eval_cache.tsv in 84.690872 s
+Write time took 0.00222699999995 s
+Wrote 750000 predictions to CTCF.eval_cache.tsv in 53.151236 s
+Write time took 0.00118099999963 s
+Wrote 760000 predictions to CTCF.eval_cache.tsv in 63.241305 s
+Write time took 0.000906000000214 s
+Wrote 770000 predictions to CTCF.eval_cache.tsv in 92.988358 s
+Write time took 0.0015400000002 s
+Wrote 780000 predictions to CTCF.eval_cache.tsv in 61.789965 s
+Write time took 0.00109599999996 s
+Wrote 790000 predictions to CTCF.eval_cache.tsv in 66.543577 s
+Write time took 0.00134400000024 s
+Wrote 800000 predictions to CTCF.eval_cache.tsv in 80.814764 s
+Write time took 0.00101199999972 s
+Wrote 810000 predictions to CTCF.eval_cache.tsv in 120.27488 s
+Write time took 0.00100099999963 s
+Wrote 820000 predictions to CTCF.eval_cache.tsv in 89.177307 s
+Write time took 0.00146199999926 s
+Wrote 830000 predictions to CTCF.eval_cache.tsv in 122.065399 s
+Write time took 0.00123100000019 s
+Wrote 840000 predictions to CTCF.eval_cache.tsv in 94.191316 s
+Write time took 0.00137799999993 s
+Wrote 850000 predictions to CTCF.eval_cache.tsv in 66.84242 s
+Write time took 0.00114599999961 s
+Wrote 860000 predictions to CTCF.eval_cache.tsv in 67.577743 s
+Write time took 0.00108 s
+Wrote 870000 predictions to CTCF.eval_cache.tsv in 75.778417 s
+Write time took 0.00140599999941 s
+Wrote 880000 predictions to CTCF.eval_cache.tsv in 81.256675 s
+Write time took 0.001037 s
+Wrote 890000 predictions to CTCF.eval_cache.tsv in 80.734657 s
+Write time took 0.00140499999998 s
+Wrote 900000 predictions to CTCF.eval_cache.tsv in 56.766099 s
+Write time took 0.00123299999996 s
+Wrote 910000 predictions to CTCF.eval_cache.tsv in 55.890001 s
+Write time took 0.00167400000009 s
+Wrote 920000 predictions to CTCF.eval_cache.tsv in 53.040441 s
+Write time took 0.00161899999966 s
+Dnase vals None detected. Attempting to convert None to mean
+Wrote 930000 predictions to CTCF.eval_cache.tsv in 50.728277 s
+Write time took 0.00168300000041 s
+Wrote 940000 predictions to CTCF.eval_cache.tsv in 63.503837 s
+Write time took 0.00201399999969 s
+Wrote 950000 predictions to CTCF.eval_cache.tsv in 39.336347 s
+Write time took 0.00107599999956 s
+Wrote 960000 predictions to CTCF.eval_cache.tsv in 60.560751 s
+Write time took 0.00155200000063 s
+Wrote 970000 predictions to CTCF.eval_cache.tsv in 56.651162 s
+Write time took 0.00137300000006 s
+Wrote 980000 predictions to CTCF.eval_cache.tsv in 43.255332 s
+Write time took 0.00164700000005 s
+Wrote 990000 predictions to CTCF.eval_cache.tsv in 28.949164 s
+Write time took 0.000989000000118 s
+Wrote 1000000 predictions to CTCF.eval_cache.tsv in 24.797606 s
+Write time took 0.000966999999946 s
+Wrote 1010000 predictions to CTCF.eval_cache.tsv in 30.076259 s
+Write time took 0.000946999999542 s
+Wrote 1020000 predictions to CTCF.eval_cache.tsv in 58.906601 s
+Write time took 0.00135300000056 s
+Wrote 1030000 predictions to CTCF.eval_cache.tsv in 70.419442 s
+Write time took 0.00149099999999 s
+Wrote 1040000 predictions to CTCF.eval_cache.tsv in 91.518835 s
+Write time took 0.00147800000013 s
+Wrote 1050000 predictions to CTCF.eval_cache.tsv in 83.312112 s
+Write time took 0.00109900000007 s
+Wrote 1060000 predictions to CTCF.eval_cache.tsv in 70.518793 s
+Write time took 0.00120699999934 s
+Wrote 1070000 predictions to CTCF.eval_cache.tsv in 69.034128 s
+Write time took 0.00115800000003 s
+Wrote 1080000 predictions to CTCF.eval_cache.tsv in 83.826178 s
+Write time took 0.00176600000032 s
+Wrote 1090000 predictions to CTCF.eval_cache.tsv in 72.484646 s
+Write time took 0.00129699999979 s
+Wrote 1100000 predictions to CTCF.eval_cache.tsv in 102.475737 s
+Write time took 0.00138499999957 s
+Wrote 1110000 predictions to CTCF.eval_cache.tsv in 88.097004 s
+Write time took 0.0013600000002 s
+Wrote 1120000 predictions to CTCF.eval_cache.tsv in 61.186011 s
+Write time took 0.00107900000057 s
+Wrote 1130000 predictions to CTCF.eval_cache.tsv in 46.206167 s
+Write time took 0.000885999999809 s
+Wrote 1140000 predictions to CTCF.eval_cache.tsv in 57.517246 s
+Write time took 0.00119300000006 s
+Wrote 1150000 predictions to CTCF.eval_cache.tsv in 48.515962 s
+Write time took 0.00134499999967 s
+Wrote 1160000 predictions to CTCF.eval_cache.tsv in 47.075102 s
+Write time took 0.00135800000044 s
+Wrote 1170000 predictions to CTCF.eval_cache.tsv in 40.711517 s
+Write time took 0.000911000000087 s
+Wrote 1180000 predictions to CTCF.eval_cache.tsv in 38.435935 s
+Write time took 0.00138700000025 s
+Wrote 1190000 predictions to CTCF.eval_cache.tsv in 74.700265 s
+Write time took 0.00139600000057 s
+Wrote 1200000 predictions to CTCF.eval_cache.tsv in 68.695503 s
+Write time took 0.000982000000477 s
+Wrote 1210000 predictions to CTCF.eval_cache.tsv in 70.806056 s
+Write time took 0.000960999999734 s
+Wrote 1220000 predictions to CTCF.eval_cache.tsv in 30.550089 s
+Write time took 0.000954999999522 s
+Wrote 1230000 predictions to CTCF.eval_cache.tsv in 47.296303 s
+Write time took 0.000955000000431 s
+Wrote 1240000 predictions to CTCF.eval_cache.tsv in 68.925355 s
+Write time took 0.00103299999955 s
+Wrote 1250000 predictions to CTCF.eval_cache.tsv in 42.764571 s
+Write time took 0.00103299999955 s
+Wrote 1260000 predictions to CTCF.eval_cache.tsv in 54.762031 s
+Write time took 0.00134499999876 s
+Wrote 1270000 predictions to CTCF.eval_cache.tsv in 49.139273 s
+Write time took 0.00153200000022 s
+Wrote 1280000 predictions to CTCF.eval_cache.tsv in 47.613452 s
+Write time took 0.00111500000094 s
+Wrote 1290000 predictions to CTCF.eval_cache.tsv in 66.275367 s
+Write time took 0.00137200000063 s
+Wrote 1300000 predictions to CTCF.eval_cache.tsv in 46.122832 s
+Write time took 0.000941000000239 s
+Wrote 1310000 predictions to CTCF.eval_cache.tsv in 55.160896 s
+Write time took 0.00114199999916 s
+Wrote 1320000 predictions to CTCF.eval_cache.tsv in 70.403598 s
+Write time took 0.000919000000067 s
+Wrote 1330000 predictions to CTCF.eval_cache.tsv in 50.106612 s
+Write time took 0.00157799999943 s
+Wrote 1340000 predictions to CTCF.eval_cache.tsv in 46.354007 s
+Write time took 0.0012999999999 s
+Wrote 1350000 predictions to CTCF.eval_cache.tsv in 38.161961 s
+Write time took 0.000997000001007 s
+Wrote 1360000 predictions to CTCF.eval_cache.tsv in 54.695591 s
+Write time took 0.000942999999097 s
+Wrote 1370000 predictions to CTCF.eval_cache.tsv in 55.483308 s
+Write time took 0.00093299999935 s
+Wrote 1380000 predictions to CTCF.eval_cache.tsv in 40.077395 s
+Write time took 0.00111999999899 s
+Wrote 1390000 predictions to CTCF.eval_cache.tsv in 23.460528 s
+Write time took 0.00100399999974 s
+Wrote 1400000 predictions to CTCF.eval_cache.tsv in 34.252366 s
+Write time took 0.00115299999925 s
+Wrote 1410000 predictions to CTCF.eval_cache.tsv in 42.406395 s
+Write time took 0.0010940000011 s
+Wrote 1420000 predictions to CTCF.eval_cache.tsv in 60.707735 s
+Write time took 0.000975999999355 s
+Wrote 1430000 predictions to CTCF.eval_cache.tsv in 38.451968 s
+Write time took 0.00137800000084 s
+Wrote 1440000 predictions to CTCF.eval_cache.tsv in 23.978172 s
+Write time took 0.000976000001174 s
+Wrote 1450000 predictions to CTCF.eval_cache.tsv in 28.547634 s
+Write time took 0.00163700000121 s
+Wrote 1460000 predictions to CTCF.eval_cache.tsv in 28.368105 s
+Write time took 0.00114799999938 s
+Wrote 1470000 predictions to CTCF.eval_cache.tsv in 27.093661 s
+Write time took 0.00128699999914 s
+Wrote 1480000 predictions to CTCF.eval_cache.tsv in 23.995308 s
+Write time took 0.00095599999986 s
+Wrote 1490000 predictions to CTCF.eval_cache.tsv in 24.958725 s
+Write time took 0.000992999999653 s
+Wrote 1500000 predictions to CTCF.eval_cache.tsv in 33.280211 s
+Write time took 0.00160700000015 s
+Wrote 1510000 predictions to CTCF.eval_cache.tsv in 35.637177 s
+Write time took 0.000976999999693 s
+Wrote 1520000 predictions to CTCF.eval_cache.tsv in 38.839641 s
+Write time took 0.00115299999925 s
+Wrote 1530000 predictions to CTCF.eval_cache.tsv in 40.286077 s
+Write time took 0.00141000000076 s
+Wrote 1540000 predictions to CTCF.eval_cache.tsv in 30.334448 s
+Write time took 0.00103000000126 s
+Wrote 1550000 predictions to CTCF.eval_cache.tsv in 33.305241 s
+Write time took 0.00106899999992 s
+Wrote 1560000 predictions to CTCF.eval_cache.tsv in 43.573912 s
+Write time took 0.00105800000165 s
+Wrote 1570000 predictions to CTCF.eval_cache.tsv in 58.461877 s
+Write time took 0.00105400000029 s
+Wrote 1580000 predictions to CTCF.eval_cache.tsv in 39.338024 s
+Write time took 0.00104800000008 s
+Wrote 1590000 predictions to CTCF.eval_cache.tsv in 35.507649 s
+Write time took 0.00104800000008 s
+Wrote 1600000 predictions to CTCF.eval_cache.tsv in 28.410537 s
+Write time took 0.00129399999969 s
+Wrote 1610000 predictions to CTCF.eval_cache.tsv in 29.19424 s
+Write time took 0.00104099999953 s
+Wrote 1620000 predictions to CTCF.eval_cache.tsv in 27.752231 s
+Write time took 0.0010970000003 s
+Wrote 1630000 predictions to CTCF.eval_cache.tsv in 27.073532 s
+Write time took 0.000938000001042 s
+Wrote 1640000 predictions to CTCF.eval_cache.tsv in 36.599479 s
+Write time took 0.00140400000055 s
+Wrote 1650000 predictions to CTCF.eval_cache.tsv in 40.458511 s
+Write time took 0.00105299999996 s
+Wrote 1660000 predictions to CTCF.eval_cache.tsv in 23.973047 s
+Write time took 0.00116900000103 s
+Wrote 1670000 predictions to CTCF.eval_cache.tsv in 23.858322 s
+Write time took 0.00122100000044 s
+Wrote 1680000 predictions to CTCF.eval_cache.tsv in 18.329847 s
+Write time took 0.000934000001507 s
+Wrote 1690000 predictions to CTCF.eval_cache.tsv in 31.482974 s
+Write time took 0.000974999999016 s
+Wrote 1700000 predictions to CTCF.eval_cache.tsv in 54.044302 s
+Write time took 0.00102599999991 s
+Wrote 1710000 predictions to CTCF.eval_cache.tsv in 51.883051 s
+Write time took 0.00100399999974 s
+Wrote 1720000 predictions to CTCF.eval_cache.tsv in 56.825116 s
+Write time took 0.0009710000013 s
+Wrote 1730000 predictions to CTCF.eval_cache.tsv in 27.274217 s
+Write time took 0.00105199999962 s
+Wrote 1740000 predictions to CTCF.eval_cache.tsv in 29.105075 s
+Write time took 0.000923000001421 s
+Wrote 1750000 predictions to CTCF.eval_cache.tsv in 38.73367 s
+Write time took 0.00152100000014 s
+Wrote 1760000 predictions to CTCF.eval_cache.tsv in 37.674841 s
+Write time took 0.00131499999952 s
+Wrote 1770000 predictions to CTCF.eval_cache.tsv in 41.887108 s
+Write time took 0.00158499999998 s
+Wrote 1780000 predictions to CTCF.eval_cache.tsv in 25.138271 s
+Write time took 0.00113799999963 s
+Wrote 1790000 predictions to CTCF.eval_cache.tsv in 37.54909 s
+Write time took 0.000950999999986 s
+Wrote 1800000 predictions to CTCF.eval_cache.tsv in 34.853615 s
+Write time took 0.000914000000193 s
+Wrote 1810000 predictions to CTCF.eval_cache.tsv in 78.270343 s
+Write time took 0.000928000001295 s
+Wrote 1820000 predictions to CTCF.eval_cache.tsv in 28.152308 s
+Write time took 0.00121199999921 s
+Wrote 1830000 predictions to CTCF.eval_cache.tsv in 30.077674 s
+Write time took 0.00100300000122 s
+Wrote 1840000 predictions to CTCF.eval_cache.tsv in 32.828976 s
+Write time took 0.000925999998799 s
+Wrote 1850000 predictions to CTCF.eval_cache.tsv in 47.585586 s
+Write time took 0.000975999999355 s
+Wrote 1860000 predictions to CTCF.eval_cache.tsv in 32.059187 s
+Write time took 0.000911999999516 s
+Wrote 1870000 predictions to CTCF.eval_cache.tsv in 38.221782 s
+Write time took 0.000954999999522 s
+Wrote 1880000 predictions to CTCF.eval_cache.tsv in 36.924213 s
+Write time took 0.00105799999983 s
+Wrote 1890000 predictions to CTCF.eval_cache.tsv in 55.687757 s
+Write time took 0.00095699999838 s
+Wrote 1900000 predictions to CTCF.eval_cache.tsv in 37.603823 s
+Write time took 0.00095599999986 s
+Wrote 1910000 predictions to CTCF.eval_cache.tsv in 53.897365 s
+Write time took 0.00105200000144 s
+Wrote 1920000 predictions to CTCF.eval_cache.tsv in 26.15059 s
+Write time took 0.00109100000009 s
+Wrote 1930000 predictions to CTCF.eval_cache.tsv in 18.919674 s
+Write time took 0.000879999999597 s
+Wrote 1940000 predictions to CTCF.eval_cache.tsv in 25.970032 s
+Write time took 0.00093200000083 s
+Wrote 1950000 predictions to CTCF.eval_cache.tsv in 30.050358 s
+Write time took 0.000942000000578 s
+Wrote 1960000 predictions to CTCF.eval_cache.tsv in 27.982748 s
+Write time took 0.00103499999932 s
+Wrote 1970000 predictions to CTCF.eval_cache.tsv in 35.375069 s
+Write time took 0.00116100000014 s
+Wrote 1980000 predictions to CTCF.eval_cache.tsv in 27.464804 s
+Write time took 0.0012229999993 s
+Wrote 1990000 predictions to CTCF.eval_cache.tsv in 25.89522 s
+Write time took 0.000991999999314 s
+Wrote 2000000 predictions to CTCF.eval_cache.tsv in 30.885524 s
+Write time took 0.00114500000018 s
+Wrote 2010000 predictions to CTCF.eval_cache.tsv in 56.143704 s
+Write time took 0.00130399999944 s
+Wrote 2020000 predictions to CTCF.eval_cache.tsv in 43.561602 s
+Write time took 0.00111600000128 s
+Wrote 2030000 predictions to CTCF.eval_cache.tsv in 47.963683 s
+Write time took 0.000896999999895 s
+Wrote 2040000 predictions to CTCF.eval_cache.tsv in 40.654716 s
+Write time took 0.0009710000013 s
+Wrote 2050000 predictions to CTCF.eval_cache.tsv in 17.840358 s
+Write time took 0.00102499999957 s
+Wrote 2060000 predictions to CTCF.eval_cache.tsv in 17.892385 s
+Write time took 0.00108099999852 s
+Wrote 2070000 predictions to CTCF.eval_cache.tsv in 25.304461 s
+Write time took 0.00128600000062 s
+Wrote 2080000 predictions to CTCF.eval_cache.tsv in 26.102766 s
+Write time took 0.000987999999779 s
+Wrote 2090000 predictions to CTCF.eval_cache.tsv in 15.042886 s
+Write time took 0.000899999999092 s
+Wrote 2100000 predictions to CTCF.eval_cache.tsv in 19.950335 s
+Write time took 0.00103399999898 s
+Wrote 2110000 predictions to CTCF.eval_cache.tsv in 19.694819 s
+Write time took 0.0011429999995 s
+Wrote 2120000 predictions to CTCF.eval_cache.tsv in 17.698969 s
+Write time took 0.000996999999188 s
+Wrote 2130000 predictions to CTCF.eval_cache.tsv in 17.046674 s
+Write time took 0.00104300000021 s
+Wrote 2140000 predictions to CTCF.eval_cache.tsv in 36.487708 s
+Write time took 0.000950999999986 s
+Wrote 2150000 predictions to CTCF.eval_cache.tsv in 48.411873 s
+Write time took 0.00093200000083 s
+Wrote 2160000 predictions to CTCF.eval_cache.tsv in 50.831508 s
+Write time took 0.00148600000102 s
+Wrote 2170000 predictions to CTCF.eval_cache.tsv in 49.394508 s
+Write time took 0.00110200000017 s
+Wrote 2180000 predictions to CTCF.eval_cache.tsv in 43.61858 s
+Write time took 0.000950999999986 s
+Wrote 2190000 predictions to CTCF.eval_cache.tsv in 64.178124 s
+Write time took 0.000866000000315 s
+Wrote 2200000 predictions to CTCF.eval_cache.tsv in 88.246328 s
+Write time took 0.00133300000016 s
+Wrote 2210000 predictions to CTCF.eval_cache.tsv in 72.690789 s
+Write time took 0.00106700000106 s
+Wrote 2220000 predictions to CTCF.eval_cache.tsv in 59.228488 s
+Write time took 0.00114899999971 s
+Wrote 2230000 predictions to CTCF.eval_cache.tsv in 29.604242 s
+Write time took 0.000968000000285 s
+Wrote 2240000 predictions to CTCF.eval_cache.tsv in 36.353391 s
+Write time took 0.00102200000038 s
+Wrote 2250000 predictions to CTCF.eval_cache.tsv in 39.048698 s
+Write time took 0.00106199999937 s
+Wrote 2260000 predictions to CTCF.eval_cache.tsv in 25.918771 s
+Write time took 0.00090099999943 s
+Wrote 2270000 predictions to CTCF.eval_cache.tsv in 51.097132 s
+Write time took 0.000962000000072 s
+Wrote 2280000 predictions to CTCF.eval_cache.tsv in 49.203199 s
+Write time took 0.00115399999959 s
+Wrote 2290000 predictions to CTCF.eval_cache.tsv in 58.4387 s
+Write time took 0.00110800000039 s
+Wrote 2300000 predictions to CTCF.eval_cache.tsv in 63.648593 s
+Write time took 0.00100999999995 s
+Wrote 2310000 predictions to CTCF.eval_cache.tsv in 43.117137 s
+Write time took 0.000935000000027 s
+Wrote 2320000 predictions to CTCF.eval_cache.tsv in 54.528488 s
+Write time took 0.000938999999562 s
+Wrote 2330000 predictions to CTCF.eval_cache.tsv in 44.503816 s
+Write time took 0.00101600000016 s
+Wrote 2340000 predictions to CTCF.eval_cache.tsv in 60.092395 s
+Write time took 0.0010340000008 s
+Wrote 2350000 predictions to CTCF.eval_cache.tsv in 55.881327 s
+Write time took 0.000935000000027 s
+Wrote 2360000 predictions to CTCF.eval_cache.tsv in 49.559026 s
+Write time took 0.000942999999097 s
+Dnase vals None detected. Attempting to convert None to mean
+Wrote 2370000 predictions to CTCF.eval_cache.tsv in 52.255556 s
+Write time took 0.00110200000017 s
+Wrote 2380000 predictions to CTCF.eval_cache.tsv in 27.537133 s
+Write time took 0.00101099999847 s
+Wrote 2390000 predictions to CTCF.eval_cache.tsv in 25.574422 s
+Write time took 0.00097199999982 s
+Wrote 2400000 predictions to CTCF.eval_cache.tsv in 32.196427 s
+Write time took 0.00118999999904 s
+Wrote 2410000 predictions to CTCF.eval_cache.tsv in 53.299191 s
+Write time took 0.000920999998925 s
+Wrote 2420000 predictions to CTCF.eval_cache.tsv in 14.418947 s
+Write time took 0.00101600000016 s
+Wrote 2430000 predictions to CTCF.eval_cache.tsv in 19.091179 s
+Write time took 0.000968000000285 s
+Wrote 2440000 predictions to CTCF.eval_cache.tsv in 10.85788 s
+Write time took 0.0010170000005 s
+Wrote 2450000 predictions to CTCF.eval_cache.tsv in 9.808775 s
+Write time took 0.00138100000004 s
+Wrote 2460000 predictions to CTCF.eval_cache.tsv in 10.062631 s
+Write time took 0.00237500000003 s
+Wrote 2470000 predictions to CTCF.eval_cache.tsv in 13.770316 s
+Write time took 0.00176100000135 s
+Wrote 2480000 predictions to CTCF.eval_cache.tsv in 9.847204 s
+Write time took 0.0011459999987 s
+Wrote 2490000 predictions to CTCF.eval_cache.tsv in 10.761722 s
+Write time took 0.00142000000051 s
+Wrote 2500000 predictions to CTCF.eval_cache.tsv in 10.866663 s
+Write time took 0.000895999999557 s
+Wrote 2510000 predictions to CTCF.eval_cache.tsv in 7.657429 s
+Write time took 0.000885999999809 s
+Wrote 2520000 predictions to CTCF.eval_cache.tsv in 8.480558 s
+Write time took 0.00097999999889 s
+Wrote 2530000 predictions to CTCF.eval_cache.tsv in 9.248183 s
+Write time took 0.00090099999943 s
+Wrote 2540000 predictions to CTCF.eval_cache.tsv in 9.356314 s
+Write time took 0.00106400000004 s
+Wrote 2550000 predictions to CTCF.eval_cache.tsv in 10.739642 s
+Write time took 0.000961000001553 s
+Wrote 2560000 predictions to CTCF.eval_cache.tsv in 11.567522 s
+Write time took 0.00108399999954 s
+Wrote 2570000 predictions to CTCF.eval_cache.tsv in 9.640759 s
+Write time took 0.000879999999597 s
+Wrote 2580000 predictions to CTCF.eval_cache.tsv in 10.251153 s
+Write time took 0.00102700000025 s
+Wrote 2590000 predictions to CTCF.eval_cache.tsv in 10.012646 s
+Write time took 0.000889999999345 s
+Wrote 2600000 predictions to CTCF.eval_cache.tsv in 10.301211 s
+Write time took 0.00161600000138 s
+Wrote 2610000 predictions to CTCF.eval_cache.tsv in 12.068841 s
+Write time took 0.00106899999992 s
+Wrote 2620000 predictions to CTCF.eval_cache.tsv in 10.156046 s
+Write time took 0.00106099999903 s
+Wrote 2630000 predictions to CTCF.eval_cache.tsv in 9.775388 s
+Write time took 0.00103200000012 s
+Wrote 2640000 predictions to CTCF.eval_cache.tsv in 10.412583 s
+Write time took 0.000951999998506 s
+Wrote 2650000 predictions to CTCF.eval_cache.tsv in 9.528716 s
+Write time took 0.000885999999809 s
+Wrote 2660000 predictions to CTCF.eval_cache.tsv in 8.573867 s
+Write time took 0.00127799999973 s
+Wrote 2670000 predictions to CTCF.eval_cache.tsv in 7.780929 s
+Write time took 0.000964000000749 s
+Wrote 2680000 predictions to CTCF.eval_cache.tsv in 10.075959 s
+Write time took 0.000975999999355 s
+Wrote 2690000 predictions to CTCF.eval_cache.tsv in 10.311168 s
+Write time took 0.000992999999653 s
+Wrote 2700000 predictions to CTCF.eval_cache.tsv in 10.966813 s
+Write time took 0.00099500000033 s
+Wrote 2710000 predictions to CTCF.eval_cache.tsv in 8.890425 s
+Write time took 0.000976999999693 s
+Wrote 2720000 predictions to CTCF.eval_cache.tsv in 7.117323 s
+Write time took 0.00102599999991 s
+Wrote 2730000 predictions to CTCF.eval_cache.tsv in 11.088946 s
+Write time took 0.000976999999693 s
+Wrote 2740000 predictions to CTCF.eval_cache.tsv in 9.367826 s
+Write time took 0.00111800000013 s
+Wrote 2750000 predictions to CTCF.eval_cache.tsv in 8.865478 s
+Write time took 0.000901999999769 s
+Wrote 2760000 predictions to CTCF.eval_cache.tsv in 10.804074 s
+Write time took 0.000933999999688 s
+Wrote 2770000 predictions to CTCF.eval_cache.tsv in 9.919058 s
+Write time took 0.000896000001376 s
+Wrote 2780000 predictions to CTCF.eval_cache.tsv in 10.726923 s
+Write time took 0.000930999998673 s
+Wrote 2790000 predictions to CTCF.eval_cache.tsv in 9.525937 s
+Write time took 0.000921999999264 s
+Wrote 2800000 predictions to CTCF.eval_cache.tsv in 9.509648 s
+Write time took 0.00100899999961 s
+Wrote 2810000 predictions to CTCF.eval_cache.tsv in 9.042612 s
+Write time took 0.00103499999932 s
+Wrote 2820000 predictions to CTCF.eval_cache.tsv in 9.419421 s
+Write time took 0.000966000001426 s
+Wrote 2830000 predictions to CTCF.eval_cache.tsv in 11.962095 s
+Write time took 0.00101600000016 s
+Wrote 2840000 predictions to CTCF.eval_cache.tsv in 11.412497 s
+Write time took 0.00103399999898 s
+Wrote 2850000 predictions to CTCF.eval_cache.tsv in 10.237149 s
+Write time took 0.00103399999898 s
+Wrote 2860000 predictions to CTCF.eval_cache.tsv in 13.23944 s
+Write time took 0.00128099999893 s
+Wrote 2870000 predictions to CTCF.eval_cache.tsv in 10.882322 s
+Write time took 0.000984999998764 s
+Wrote 2880000 predictions to CTCF.eval_cache.tsv in 15.507218 s
+Write time took 0.000899000000572 s
+Wrote 2890000 predictions to CTCF.eval_cache.tsv in 16.358806 s
+Write time took 0.000960999999734 s
+Wrote 2900000 predictions to CTCF.eval_cache.tsv in 55.986418 s
+Write time took 0.000970999999481 s
+Wrote 2910000 predictions to CTCF.eval_cache.tsv in 57.926259 s
+Write time took 0.00109599999996 s
+Wrote 2920000 predictions to CTCF.eval_cache.tsv in 13.262331 s
+Write time took 0.00106100000085 s
+Wrote 2930000 predictions to CTCF.eval_cache.tsv in 27.994371 s
+Write time took 0.000991999999314 s
+Wrote 2940000 predictions to CTCF.eval_cache.tsv in 43.886346 s
+Write time took 0.00168599999961 s
+Wrote 2950000 predictions to CTCF.eval_cache.tsv in 23.95402 s
+Write time took 0.00113400000009 s
+Wrote 2960000 predictions to CTCF.eval_cache.tsv in 16.460858 s
+Write time took 0.00102800000059 s
+Wrote 2970000 predictions to CTCF.eval_cache.tsv in 13.334167 s
+Write time took 0.000910000000658 s
+Wrote 2980000 predictions to CTCF.eval_cache.tsv in 17.677831 s
+Write time took 0.00101100000029 s
+Wrote 2990000 predictions to CTCF.eval_cache.tsv in 16.891255 s
+Write time took 0.000993999999992 s
+Wrote 3000000 predictions to CTCF.eval_cache.tsv in 70.871919 s
+Write time took 0.000966999999946 s
+Dnase vals None detected. Attempting to convert None to mean
+Wrote 3010000 predictions to CTCF.eval_cache.tsv in 77.302615 s
+Write time took 0.000991000000795 s
+Wrote 3020000 predictions to CTCF.eval_cache.tsv in 81.637465 s
+Write time took 0.001522999999 s
+Wrote 3030000 predictions to CTCF.eval_cache.tsv in 85.922572 s
+Write time took 0.00105199999962 s
+Wrote 3040000 predictions to CTCF.eval_cache.tsv in 91.411172 s
+Write time took 0.00116999999955 s
+Wrote 3050000 predictions to CTCF.eval_cache.tsv in 42.265355 s
+Write time took 0.00149899999997 s
+Wrote 3060000 predictions to CTCF.eval_cache.tsv in 44.579072 s
+Write time took 0.00106500000038 s
+Wrote 3070000 predictions to CTCF.eval_cache.tsv in 89.358716 s
+Write time took 0.00105199999962 s
+Wrote 3080000 predictions to CTCF.eval_cache.tsv in 76.144166 s
+Write time took 0.0010000000002 s
+Wrote 3090000 predictions to CTCF.eval_cache.tsv in 85.866362 s
+Write time took 0.00129399999969 s
+Wrote 3100000 predictions to CTCF.eval_cache.tsv in 105.851139 s
+Write time took 0.00119000000086 s
+Wrote 3110000 predictions to CTCF.eval_cache.tsv in 62.507512 s
+Write time took 0.00113000000056 s
+Wrote 3120000 predictions to CTCF.eval_cache.tsv in 102.168241 s
+Write time took 0.000994999998511 s
+Wrote 3130000 predictions to CTCF.eval_cache.tsv in 110.437338 s
+Write time took 0.00140199999987 s
+Wrote 3140000 predictions to CTCF.eval_cache.tsv in 78.87574 s
+Write time took 0.00122399999964 s
+Wrote 3150000 predictions to CTCF.eval_cache.tsv in 28.606056 s
+Write time took 0.00110200000017 s
+Wrote 3160000 predictions to CTCF.eval_cache.tsv in 52.445783 s
+Write time took 0.00109100000009 s
+Wrote 3170000 predictions to CTCF.eval_cache.tsv in 22.293987 s
+Write time took 0.0013770000005 s
+Wrote 3180000 predictions to CTCF.eval_cache.tsv in 34.386596 s
+Write time took 0.0010970000003 s
+Wrote 3190000 predictions to CTCF.eval_cache.tsv in 16.045573 s
+Write time took 0.000991999999314 s
+Wrote 3200000 predictions to CTCF.eval_cache.tsv in 84.668312 s
+Write time took 0.00100799999927 s
+Wrote 3210000 predictions to CTCF.eval_cache.tsv in 60.464737 s
+Write time took 0.00099500000033 s
+Wrote 3220000 predictions to CTCF.eval_cache.tsv in 70.045821 s
+Write time took 0.00114199999916 s
+Wrote 3230000 predictions to CTCF.eval_cache.tsv in 52.896897 s
+Write time took 0.00164200000108 s
+Wrote 3240000 predictions to CTCF.eval_cache.tsv in 60.089497 s
+Write time took 0.000986000000921 s
+Wrote 3250000 predictions to CTCF.eval_cache.tsv in 53.914986 s
+Write time took 0.00168300000041 s
+Wrote 3260000 predictions to CTCF.eval_cache.tsv in 46.827439 s
+Write time took 0.00140199999987 s
+Wrote 3270000 predictions to CTCF.eval_cache.tsv in 21.011527 s
+Write time took 0.00107600000047 s
+Wrote 3280000 predictions to CTCF.eval_cache.tsv in 13.097809 s
+Write time took 0.00104400000055 s
+Wrote 3290000 predictions to CTCF.eval_cache.tsv in 44.281705 s
+Write time took 0.00112400000035 s
+Wrote 3300000 predictions to CTCF.eval_cache.tsv in 36.778657 s
+Write time took 0.00115600000026 s
+Wrote 3310000 predictions to CTCF.eval_cache.tsv in 33.362634 s
+Write time took 0.0012200000001 s
+Wrote 3320000 predictions to CTCF.eval_cache.tsv in 35.16895 s
+Write time took 0.000992999999653 s
+Wrote 3330000 predictions to CTCF.eval_cache.tsv in 26.583357 s
+Write time took 0.0012200000001 s
+Wrote 3340000 predictions to CTCF.eval_cache.tsv in 42.486446 s
+Write time took 0.00113500000043 s
+Wrote 3350000 predictions to CTCF.eval_cache.tsv in 65.272436 s
+Write time took 0.00109299999895 s
+Wrote 3360000 predictions to CTCF.eval_cache.tsv in 56.13852 s
+Write time took 0.00115300000107 s
+Wrote 3370000 predictions to CTCF.eval_cache.tsv in 49.823882 s
+Write time took 0.00117599999976 s
+Wrote 3380000 predictions to CTCF.eval_cache.tsv in 46.211892 s
+Write time took 0.00105400000029 s
+Wrote 3390000 predictions to CTCF.eval_cache.tsv in 38.181123 s
+Write time took 0.00149799999963 s
+Wrote 3400000 predictions to CTCF.eval_cache.tsv in 31.552964 s
+Write time took 0.001397 s
+Wrote 3410000 predictions to CTCF.eval_cache.tsv in 32.964814 s
+Write time took 0.000984000000244 s
+Wrote 3420000 predictions to CTCF.eval_cache.tsv in 29.270275 s
+Write time took 0.00103200000012 s
+Wrote 3430000 predictions to CTCF.eval_cache.tsv in 48.093027 s
+Write time took 0.00126700000146 s
+Wrote 3440000 predictions to CTCF.eval_cache.tsv in 39.884836 s
+Write time took 0.000954000001002 s
+Wrote 3450000 predictions to CTCF.eval_cache.tsv in 59.017818 s
+Write time took 0.00176599999941 s
+Wrote 3460000 predictions to CTCF.eval_cache.tsv in 51.451992 s
+Write time took 0.00100099999872 s
+Wrote 3470000 predictions to CTCF.eval_cache.tsv in 48.651903 s
+Write time took 0.000994999998511 s
+Wrote 3480000 predictions to CTCF.eval_cache.tsv in 47.480776 s
+Write time took 0.00211900000068 s
+Wrote 3490000 predictions to CTCF.eval_cache.tsv in 27.983069 s
+Write time took 0.00120699999934 s
+Wrote 3500000 predictions to CTCF.eval_cache.tsv in 46.051388 s
+Write time took 0.00129399999969 s
+Wrote 3510000 predictions to CTCF.eval_cache.tsv in 27.522922 s
+Write time took 0.000946000000113 s
+Wrote 3520000 predictions to CTCF.eval_cache.tsv in 29.667367 s
+Write time took 0.000937000000704 s
+Wrote 3530000 predictions to CTCF.eval_cache.tsv in 20.462598 s
+Write time took 0.00121299999955 s
+Wrote 3540000 predictions to CTCF.eval_cache.tsv in 26.839017 s
+Write time took 0.00189799999862 s
+Wrote 3550000 predictions to CTCF.eval_cache.tsv in 25.467978 s
+Write time took 0.00100300000122 s
+Wrote 3560000 predictions to CTCF.eval_cache.tsv in 41.631482 s
+Write time took 0.00119899999845 s

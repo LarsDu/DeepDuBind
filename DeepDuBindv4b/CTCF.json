@@ -1,0 +1,42 @@
+{
+
+    "training_params":{
+		"train_cell_types":"A549,H1-hESC,HeLa-S3,HepG2,IMR-90,K562,MCF-7",
+		"test_cell_types":null,
+		"eval_cell_types":"PC-3",
+		"max_train_steps":250000,
+		"learning_rate":1e-4,
+		"batch_size":64,
+		"seq_len":600,
+		"chrom_window":3600,
+		"chrom_pool_size":8,
+		"custom_model_params":null,
+		"k_folds":3,
+		"k_validation_test_frac":0.25
+    },
+
+     
+    "files": {		
+		"chip_seq_labels_file":"../ENCODE_DREAM_LINK/ChIPseq/labels/CTCF.train.labels.tsv.bgz",				
+		"train_hdf5_file":"CTCF.train_cache.h5",
+		"eval_hdf5_file":"CTCF.eval_cache.h5",
+		"train_coords_file":"../ENCODE_DREAM_LINK/train_test/train_regions.blacklistfiltered.merged.bed",
+		"test_coords_file":null,
+		"eval_coords_file":"../ENCODE_DREAM_LINK/train_test/test_regions.blacklistfiltered.merged.bed",
+		"genome_file":"../ENCODE_DREAM_LINK/hg19_genome/hg19.genome.fa",
+		"genome_chromosome_sizes_file":"../ENCODE_DREAM_LINK/annotations/hg19.chrom.sizes",
+		"genome_annotation_file":"../ENCODE_DREAM_LINK/annotations/gencode.v19.annotation.gff3",
+		"dna_shape_dir":"../ENCODE_DREAM_LINK/DNAshape/BigWig",
+		"dnase_seq_dir":"../ENCODE_DREAM_LINK/DNASE/fold_coverage_wiggles",
+		"dnase_relaxed_peaks_dir":"../ENCODE_DREAM_LINK/DNASE/peaks/relaxed",
+		"rna_seq_dir":"",
+		"chip_seq_dir":"../ENCODE_DREAM_LINK/ChIPseq/peaks/relaxed"
+	
+	},
+
+    
+    "save":{
+		"save_dir":"CTCF_train_infC"
+        }
+
+}
